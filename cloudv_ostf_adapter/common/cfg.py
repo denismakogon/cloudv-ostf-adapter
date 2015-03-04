@@ -21,7 +21,7 @@ from cloudv_ostf_adapter import version
 
 common_opts = [
     cfg.StrOpt("health_check_config_path",
-               default='../../../etc/cloudv_ostf_adapter/health_check.conf'),
+               default='etc/cloudv_ostf_adapter/health_check.conf'),
     cfg.StrOpt("enabled_validation_plugins", default=['fuel_health']),
 ]
 
@@ -37,8 +37,8 @@ sanity_opts = [
         'fuel_health.tests.sanity.test_sanity_identity.SanityIdentityTest',
         'fuel_health.tests.sanity.test_sanity_compute.SanityComputeTest',
         'fuel_health.tests.sanity.test_sanity_heat.SanityHeatTest',
-        # 'fuel_health.tests.sanity.test_sanity_networking.NetworksTest:'
-        # 'test_list_networks_nova_network',
+        'fuel_health.tests.sanity.test_sanity_networking.NetworksTest:'
+        'test_list_networks_nova_network',
     ]),
 ]
 smoke_opts = [

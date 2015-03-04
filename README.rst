@@ -1,6 +1,9 @@
-# Cloud Validation adapter for OSTF
+=================================
+Cloud Validation adapter for OSTF
+=================================
 
-## Overview
+Overview
+--------
 
 Existing [OSTF](http://docs.mirantis.com/fuel-dev/develop/ostf_contributors_guide.html)
 code provides a number of tests which cover a number of cases needed for cloud
@@ -9,19 +12,35 @@ FUEL's nailgun. Given project aims to create standalone adapter for OSTF which
 is independent of FUEL thus making it possible to run OSTF tests on any random
 cloud (in theory).
 
-## High-level design
+High-level design
+-----------------
 
- CLI tool that works with health check plugins
- Supported plugins:
+CLI tool that works with health check plugins
+Supported plugins::
+
   - fuel health check
 
 
-## Usage
+Usage
+-----
 
+
+.. code-block:: bash
 
   $ cloudvalidation cloud-health-check {argument} [argument_parameters]
 
-  Examples:
+  Arguments::
+
+    list_plugins - Lists plugins
+    list_plugin_suites - Lists plugin test suites
+    list_plugin_tests - Lists plugin tests from all available suites
+    run_suites - Runs all tests from all suites
+
+
+Examples
+--------
+
+.. code-block:: bash
 
   $ cloudvalidation cloud-health-check list_plugins
 
@@ -35,6 +54,8 @@ cloud (in theory).
 |          | fuel_health.tests.smoke.test_create_flavor.FlavorsAdminTest      |
 +----------+------------------------------------------------------------------+
 
+.. code-block:: bash
+
   $ cloudvalidation cloud-health-check list_plugin_suites --validation-plugin fuel_health
 
 +----------+------------------------------------------------------------------+
@@ -45,6 +66,8 @@ cloud (in theory).
 |          | fuel_health.tests.sanity.test_sanity_heat.SanityHeatTest         |
 |          | fuel_health.tests.smoke.test_create_flavor.FlavorsAdminTest      |
 +----------+------------------------------------------------------------------+
+
+.. code-block:: bash
 
   $ cloudvalidation cloud-health-check list_plugin_tests --validation-plugin fuel_health
 
@@ -62,7 +85,31 @@ cloud (in theory).
 |          | fuel_health.tests.sanity.test_sanity_heat.SanityHeatTest:test_list_stacks            |
 |          | fuel_health.tests.smoke.test_create_flavor.FlavorsAdminTest:test_create_flavor       |
 +----------+--------------------------------------------------------------------------------------+
-## Links
+
+.. code-block:: bash
+
+ $ cloudvalidation --config-dir=/etc/cloudv_ostf_adapter cloud-health-check run_suites --validation-plugin-name fuel_health
+
+
+Request user list ... ok
+Request flavor list ... ok
+Request image list ... ok
+Request instance list ... ok
+Request absolute limits list ... ok
+Request snapshot list ... ok
+Request volume list ... ok
+Request stack list ... ok
+Create instance flavor ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 5.310s
+
+OK
+
+
+
+Links
+-----
 
  * [OSTF contributor's guide](http://docs.mirantis.com/fuel-dev/develop/ostf_contributors_guide.html)
  * [OSTF source code](https://github.com/stackforge/fuel-ostf)
