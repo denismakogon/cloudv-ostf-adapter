@@ -78,4 +78,19 @@ class ValidationPlugin(object):
         }
 
     def run_suites(self):
+        """
+        Runs all tests from all suites
+        """
+        raise Exception("Plugin doesn't support suites execution.")
+
+    def run_suite(self, suite):
+        """
+        Runs specific suite
+        """
         raise Exception("Plugin doesn't support suite execution.")
+
+    def run_test(self, test):
+        """
+        Runs specific test
+        """
+        raise Exception("Plugin doesn't support test execution.")

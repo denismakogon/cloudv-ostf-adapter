@@ -23,18 +23,18 @@ Supported plugins::
 
 Usage
 -----
-
-
 .. code-block:: bash
 
   $ cloudvalidation cloud-health-check {argument} [argument_parameters]
 
-  Arguments::
+Arguments::
 
     list_plugins - Lists plugins
     list_plugin_suites - Lists plugin test suites
     list_plugin_tests - Lists plugin tests from all available suites
     run_suites - Runs all tests from all suites
+    run_suite - Runs certain test suite
+    run_test - Runs certain test
 
 
 Examples
@@ -106,10 +106,20 @@ Ran 9 tests in 5.310s
 
 OK
 
+.. code-block::
 
+ $ cloudvalidation --config-dir=/etc/cloudv_ostf_adapter cloud-health-check run_suite --validation-plugin-name fuel_health --suite fuel_health.tests.sanity.test_sanity_identity.SanityIdentityTest
+
+Running test suite: fuel_health.tests.sanity.test_sanity_identity.SanityIdentityTest ...
+Request user list ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.938s
+
+OK
 
 Links
 -----
 
- * [OSTF contributor's guide](http://docs.mirantis.com/fuel-dev/develop/ostf_contributors_guide.html)
- * [OSTF source code](https://github.com/stackforge/fuel-ostf)
+ * OSTF contributor's guide - http://docs.mirantis.com/fuel-dev/develop/ostf_contributors_guide.html)
+ * OSTF source code - https://github.com/stackforge/fuel-ostf

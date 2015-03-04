@@ -23,6 +23,7 @@ common_opts = [
     cfg.StrOpt("health_check_config_path",
                default='etc/cloudv_ostf_adapter/health_check.conf'),
     cfg.StrOpt("enabled_validation_plugins", default=['fuel_health']),
+    cfg.StrOpt("nose_verbosity", default="-v")
 ]
 
 sanity_group = cfg.OptGroup("sanity", "Sanity configuration group.")
