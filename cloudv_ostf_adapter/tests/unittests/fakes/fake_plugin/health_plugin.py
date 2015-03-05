@@ -11,9 +11,21 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from cloudv_ostf_adapter.validation_plugin import fuel_health
+
+from oslo_config import cfg
+
+from cloudv_ostf_adapter.validation_plugin import base
+from cloudv_ostf_adapter.tests.unittests.fakes.fake_plugin import (
+    fake_plugin_tests)
+
+CONF = cfg.CONF
+
+SUITES = [fake_plugin_tests]
 
 
-VALIDATION_PLUGINS = [
-    fuel_health.FuelHealthPlugin,
-]
+class FakeValidationPlugin(base.ValidationPlugin):
+
+    def __init__(self, load_tests=True):
+        name = 'fake'
+        super(FakeValidationPlugin, self).__init__(
+            name, SUITES, load_tests=load_tests)

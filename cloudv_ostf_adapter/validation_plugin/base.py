@@ -12,6 +12,11 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import os
+import sys
+
+from oslo_utils import importutils
+
 from cloudv_ostf_adapter.common import utils
 from cloudv_ostf_adapter.nose_plugin import discovery
 
@@ -42,6 +47,8 @@ class SuiteDescriptor(object):
 
 class ValidationPlugin(object):
 
+    test_executor = "%(test_module_path)s:%(class)s.%(test)s"
+
     def __init__(self, name, suites, load_tests=True):
         __suites = []
         for suite in suites:
@@ -62,6 +69,33 @@ class ValidationPlugin(object):
             _tests = discovery.do_test_discovery(
                 suite.TESTS)
             tests.extend(_tests)
+        return tests
+
+    def _collect_test(self, tests):
+        test_suites_paths = []
+        for test in tests:
+            classpath, test_method = test.split(":")
+            classname = classpath.split(".")[-1]
+            module = importutils.import_class(
+                classpath).__module__
+            test_module_path = os.path.abspath(
+                sys.modules[module].__file__)
+            if test_module_path.endswith("pyc"):
+                test_module_path = test_module_path[:-1]
+            test_suites_paths.append(
+                self.test_executor %
+                {
+                    'test_module_path': test_module_path,
+                    'class': classname,
+                    'test': test_method
+                })
+        return test_suites_paths
+
+    def _get_tests_by_suite(self, suite):
+        tests = []
+        for test in self.tests:
+            if suite in test:
+                tests.append(test)
         return tests
 
     def descriptor(self):

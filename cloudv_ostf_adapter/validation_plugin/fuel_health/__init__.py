@@ -13,14 +13,13 @@
 #    under the License.
 
 import os
-import sys
 
 from nose import core
+
 from oslo_utils import importutils
 
 from cloudv_ostf_adapter.common import cfg
 from cloudv_ostf_adapter.validation_plugin import base
-from cloudv_ostf_adapter.validation_plugin.fuel_health import fuel_health_opts
 from cloudv_ostf_adapter.validation_plugin.fuel_health import sanity
 from cloudv_ostf_adapter.validation_plugin.fuel_health import smoke
 from cloudv_ostf_adapter.validation_plugin.fuel_health import high_availability
@@ -39,10 +38,37 @@ SUITES = [
 
 class FuelHealthPlugin(base.ValidationPlugin):
 
-    test_executor = "%(test_module_path)s:%(class)s.%(test)s"
-    fuel_health_opts.MonkeyPatchFuelHealthConf()
+    def setup_fuel_health_on_need(self):
+        FUEL_HEALTH_CONF = importutils.import_module("fuel_health.config")
+
+        @FUEL_HEALTH_CONF.process_singleton
+        class MonkeyPatchFuelHealthConf(object):
+
+            def __init__(self):
+                self.register_opts()
+                self.compute = cfg.CONF.compute
+                self.identity = cfg.CONF.identity
+                self.network = cfg.CONF.network
+                self.volume = cfg.CONF.volume
+                self.murano = cfg.CONF.murano
+                self.heat = cfg.CONF.heat
+                self.sahara = cfg.CONF.sahara
+
+            def register_opts(self):
+                FUEL_HEALTH_CONF.register_compute_opts(CONF)
+                FUEL_HEALTH_CONF.register_identity_opts(CONF)
+                FUEL_HEALTH_CONF.register_network_opts(CONF)
+                FUEL_HEALTH_CONF.register_volume_opts(CONF)
+                FUEL_HEALTH_CONF.register_murano_opts(CONF)
+                FUEL_HEALTH_CONF.register_heat_opts(CONF)
+                FUEL_HEALTH_CONF.register_sahara_opts(CONF)
+
+        FUEL_HEALTH_CONF.FileConfig = MonkeyPatchFuelHealthConf
+
+        MonkeyPatchFuelHealthConf()
 
     def __init__(self, load_tests=True):
+        self.setup_fuel_health_on_need()
         super(FuelHealthPlugin, self).__init__(
             'fuel_health', SUITES, load_tests=load_tests)
 
@@ -52,41 +78,10 @@ class FuelHealthPlugin(base.ValidationPlugin):
         except Exception:
             print("fuel_health is not installed.")
 
-    def _collect_test(self, tests):
-        test_suites_paths = []
-        for test in tests:
-            classpath, test_method = test.split(":")
-            classname = classpath.split(".")[-1]
-            module = importutils.import_class(
-                classpath).__module__
-            test_module_path = os.path.abspath(
-                sys.modules[module].__file__)
-            if test_module_path.endswith("pyc"):
-                test_module_path = test_module_path[:-1]
-            test_suites_paths.append(
-                self.test_executor %
-                {
-                    'test_module_path': test_module_path,
-                    'class': classname,
-                    'test': test_method
-                })
-        return test_suites_paths
-
     def run_suites(self):
-        test_suites_paths = self._collect_test(self.tests)
-        test_suites_paths.append(CONF.nose_verbosity)
-        os.environ.update(
-            {"CUSTOM_FUEL_CONFIG": CONF.health_check_config_path})
-        CONF.reload_config_files()
+        test_suites_paths = self.setup_execution(self.tests)
         print(core.TestProgram(
             argv=test_suites_paths).success)
-
-    def _get_tests_by_suite(self, suite):
-        tests = []
-        for test in self.tests:
-            if suite in test:
-                tests.append(test)
-        return tests
 
     def setup_execution(self, tests):
         test_suites_paths = self._collect_test(tests)
